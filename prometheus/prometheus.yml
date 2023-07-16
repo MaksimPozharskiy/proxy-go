@@ -21,4 +21,4 @@ rule_files:
 scrape_configs:
   - job_name: 'proxy-go'
     static_configs:
-      - targets: ['localhost:8090']
+      - targets: ['proxy-go:8090']
