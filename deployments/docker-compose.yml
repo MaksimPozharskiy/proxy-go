@@ -9,6 +9,8 @@ services:
       - "8080:8080"
     depends_on:
       - prometheus
+    env_file:
+      - ../.env
     networks:
       - backend
   grafana:
