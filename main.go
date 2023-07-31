@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"os"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -47,7 +48,10 @@ func main() {
 func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	startReq := time.Now()
 
-	targetUrl := "https://weatherbit-v1-mashape.p.rapidapi.com" + fmt.Sprintf("%s", req.URL)
+	targetUrl := os.Getenv("PROXY_TARGET_URL") + fmt.Sprintf("%s", req.URL)
+	if targetUrl == "" {
+		log.Fatal("PROXY_TARGET_URL in env not setted")
+	}
 
 	fmt.Println(req.Method, req.URL)
 	
