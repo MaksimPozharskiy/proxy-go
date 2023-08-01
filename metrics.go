@@ -25,9 +25,20 @@ var (
   )
 )
 
+var (
+	httpStatusCount = prometheus.NewCounterVec(
+			prometheus.CounterOpts{
+					Name: "proxy_go_http_status_count",
+					Help: "HTTP status codes count",
+			},
+			[]string{"code"},
+	)
+)
+
 func init() { 
 	prometheus.MustRegister(requestsTotal)
 	prometheus.MustRegister(responseTimeHistogram)
+	prometheus.MustRegister(httpStatusCount)
 }
 
 func startMetricsServer() *http.Server {

@@ -7,6 +7,7 @@ import (
   "net/http"
   "os"
   "time"
+	"strconv"
 )
 
 func startProxyServer() *http.Server {
@@ -49,6 +50,8 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	statusCode := resp.StatusCode
+
 	defer resp.Body.Close()
 
 	for name, values := range resp.Header {
@@ -62,7 +65,8 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	io.Copy(writer, resp.Body)
 
 	finishReq := time.Since(startReq).Seconds()
-	fmt.Printf("Request performs  %s\n", finishReq)
+	fmt.Printf("Request performs  %vs.\n", finishReq)
 	responseTimeHistogram.Observe(finishReq)
 	requestsTotal.Inc()
+	httpStatusCount.WithLabelValues(strconv.Itoa(statusCode)).Inc()
 }
