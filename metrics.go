@@ -2,8 +2,33 @@ package main
 
 import (
 	"net/http"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+var (
+	requestsTotal = prometheus.NewCounter(
+			prometheus.CounterOpts{
+					Name: "proxy_go_requests_total",
+					Help: "Total number of requests",
+			},
+	)
+)
+
+var (
+  responseTimeHistogram = prometheus.NewHistogram(
+    prometheus.HistogramOpts{
+      Name: "proxy_go_response_time_seconds",
+      Help: "Response time in seconds",
+      Buckets: prometheus.LinearBuckets(0.01, 0.1, 10),
+    },
+  )
+)
+
+func init() { 
+	prometheus.MustRegister(requestsTotal)
+	prometheus.MustRegister(responseTimeHistogram)
+}
 
 func startMetricsServer() *http.Server {
   http.Handle("/metrics", promhttp.Handler())

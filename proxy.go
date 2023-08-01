@@ -61,7 +61,8 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 
 	io.Copy(writer, resp.Body)
 
-	finishReq := time.Since(startReq)
+	finishReq := time.Since(startReq).Seconds()
 	fmt.Printf("Request performs  %s\n", finishReq)
+	responseTimeHistogram.Observe(finishReq)
 	requestsTotal.Inc()
 }
