@@ -118,50 +118,16 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMin": -1,
-            "fillOpacity": 89,
-            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
-            },
-            "lineWidth": 0,
-            "scaleDistribution": {
-              "type": "linear"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 200
-              },
-              {
-                "color": "#EAB839",
-                "value": 300
-              },
-              {
-                "color": "red",
-                "value": 400
-              },
-              {
-                "color": "dark-red",
-                "value": 500
-              }
-            ]
-          }
+          "mappings": []
         },
         "overrides": []
       },
@@ -171,28 +137,24 @@
         "x": 12,
         "y": 0
       },
-      "id": 6,
+      "id": 8,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.31,
-        "colorByField": "code",
-        "groupWidth": 0.7,
         "legend": {
-          "calcs": [],
-          "displayMode": "hidden",
+          "displayMode": "list",
           "placement": "bottom"
         },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "text": {},
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        },
-        "xField": "code",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        }
       },
       "targets": [
         {
@@ -200,19 +162,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum by (code) (proxy_go_http_status_count)",
-          "format": "table",
-          "instant": true,
-          "interval": "5",
-          "legendFormat": "{{label_name}}",
-          "range": false,
+          "expr": "topk(5, sum by (code) (rate(proxy_go_http_status_count[5m]))) ",
           "refId": "A"
         }
       ],
-      "title": "HTTP codes of requests",
-      "type": "barchart"
+      "title": "Percentage of http request codes in the last 5 minutes",
+      "type": "piechart"
     },
     {
       "datasource": {
@@ -315,6 +270,6 @@
   "timezone": "",
   "title": "proxy-go",
   "uid": "vvg56ar4z",
-  "version": 10,
+  "version": 15,
   "weekStart": ""
 }
