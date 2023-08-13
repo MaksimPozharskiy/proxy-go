@@ -35,10 +35,21 @@ var (
 	)
 )
 
+var (
+	throughputHistogram = prometheus.NewHistogram(
+			prometheus.HistogramOpts{
+					Name:    "proxy_go_throughput_bytes",
+					Help:    "Throughput in bytes",
+					Buckets: prometheus.LinearBuckets(1000, 1000, 10),
+			},
+	)
+)
+
 func init() { 
 	prometheus.MustRegister(requestsTotal)
 	prometheus.MustRegister(responseTimeHistogram)
 	prometheus.MustRegister(httpStatusCount)
+	prometheus.MustRegister(throughputHistogram)
 }
 
 func startMetricsServer() *http.Server {

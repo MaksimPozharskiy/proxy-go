@@ -44,6 +44,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 
 	customTransport := http.DefaultTransport
 	resp, err := customTransport.RoundTrip(proxyReq)
+
 	if err != nil {
 		fmt.Println(err)
 		http.Error(writer, "Error sending proxy request", http.StatusInternalServerError)
@@ -65,8 +66,11 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	io.Copy(writer, resp.Body)
 
 	finishReq := time.Since(startReq).Seconds()
+	throughput := float64(resp.ContentLength) / finishReq
+
 	fmt.Printf("Request performs  %vs.\n", finishReq)
 	responseTimeHistogram.Observe(finishReq)
 	requestsTotal.Inc()
 	httpStatusCount.WithLabelValues(strconv.Itoa(statusCode)).Inc()
+	throughputHistogram.Observe(throughput)
 }
