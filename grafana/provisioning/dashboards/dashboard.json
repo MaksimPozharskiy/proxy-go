@@ -107,7 +107,10 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "proxy_go_requests_total",
+          "legendFormat": "Total number of HTTP responses",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -163,7 +166,10 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "proxy_go_http_status_count{code=~\"2..|3..|4..|5..\"}",
+          "legendFormat": "{{code}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -274,7 +280,10 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "sum(rate(proxy_go_response_time_seconds_sum[5m])) / sum(rate(proxy_go_response_time_seconds_count[5m]))",
+          "legendFormat": "Average response time / count of requests",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -342,7 +351,32 @@
           },
           "unit": "short"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "Value"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -374,12 +408,12 @@
           "expr": "sum(rate(proxy_go_throughput_bytes_sum[5m])) / sum(rate(proxy_go_throughput_bytes_count[5m])) / 1024\n",
           "format": "time_series",
           "instant": false,
-          "legendFormat": "",
+          "legendFormat": "Average throughput (in KB) / count of requests",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Average throughput in KB/s",
+      "title": "Average throughput in KB/s the last 5 minutes",
       "type": "timeseries"
     }
   ],
@@ -397,6 +431,6 @@
   "timezone": "",
   "title": "proxy-go",
   "uid": "vvg56ar4z",
-  "version": 21,
+  "version": 33,
   "weekStart": ""
 }
