@@ -10,6 +10,12 @@ import (
 	"strconv"
 )
 
+var backoffSchedule = []time.Duration{
+	1 * time.Second,
+	3 * time.Second,
+	10 * time.Second,
+}
+
 func startProxyServer() *http.Server {
   http.HandleFunc("/", handleRequest)
 
@@ -42,8 +48,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	customTransport := http.DefaultTransport
-	resp, err := customTransport.RoundTrip(proxyReq)
+	resp, err := getRequestWithRetry(proxyReq)
 
 	if err != nil {
 		fmt.Println(err)
@@ -73,4 +78,39 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	requestsTotal.Inc()
 	httpStatusCount.WithLabelValues(strconv.Itoa(statusCode)).Inc()
 	throughputHistogram.Observe(throughput)
+}
+
+func getRequest(req *http.Request) (*http.Response, error) {
+	customTransport := http.DefaultTransport
+	resp, err := customTransport.RoundTrip(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func getRequestWithRetry(req *http.Request) (*http.Response, error) {
+	var err error
+	var resp *http.Response
+
+	for _, backoff := range backoffSchedule {
+		resp, err = getRequest(req)
+
+		if err == nil {
+			break
+		}
+
+		fmt.Printf("Request error: %v\n", err)
+		fmt.Printf("Retrying in %v\n", backoff)
+		time.Sleep(backoff)
+	}
+	
+	// if all retries failed
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

@@ -39,6 +39,12 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
       - backend
+  node-exporter:
+    image: prom/node-exporter:v1.2.2
+    ports:
+      - "9100:9100"
+    networks:
+      - backend
 volumes:
   grafana-data:
   grafana-configs:
