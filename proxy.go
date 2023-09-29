@@ -99,7 +99,7 @@ func getRequestWithRetry(req *http.Request) (*http.Response, error) {
 		resp, err = getRequest(req)
 
 		if err == nil {
-			break
+			return resp, nil
 		}
 
 		fmt.Printf("Request error: %v\n", err)
@@ -108,9 +108,5 @@ func getRequestWithRetry(req *http.Request) (*http.Response, error) {
 	}
 	
 	// if all retries failed
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
+	return nil, err
 }
