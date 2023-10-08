@@ -16,7 +16,7 @@ var backoffSchedule = []time.Duration{
 	10 * time.Second,
 }
 
-func startProxyServer() *http.Server {
+func createProxyServer() *http.Server {
   http.HandleFunc("/", handleRequest)
 
   server := &http.Server{
@@ -42,11 +42,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	for name, values := range req.Header {
-		for _, value := range values {
-			proxyReq.Header.Add(name, value)
-		}
-	}
+	proxyReq.Header = req.Header.Clone()
 
 	resp, err := getRequestWithRetry(proxyReq)
 

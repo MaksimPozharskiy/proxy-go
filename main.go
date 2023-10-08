@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-	server := startProxyServer()
+	server := createProxyServer()
 
-	serverMetrics := startMetricsServer()
+	serverMetrics := createMetricsServer()
 
 	go serverMetrics.ListenAndServe()
 

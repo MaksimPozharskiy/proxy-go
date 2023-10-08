@@ -46,13 +46,15 @@ var (
 )
 
 func init() { 
-	prometheus.MustRegister(requestsTotal)
-	prometheus.MustRegister(responseTimeHistogram)
-	prometheus.MustRegister(httpStatusCount)
-	prometheus.MustRegister(throughputHistogram)
+	prometheus.MustRegister(
+		requestsTotal,
+		responseTimeHistogram,
+		httpStatusCount,
+		throughputHistogram,
+	)
 }
 
-func startMetricsServer() *http.Server {
+func createMetricsServer() *http.Server {
   http.Handle("/metrics", promhttp.Handler())
   server := &http.Server{
     Addr: ":8090",
