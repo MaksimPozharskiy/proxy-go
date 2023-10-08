@@ -4,7 +4,8 @@
 
 This project is a proxy server written in the Go programming language. It leverages the power of Docker Compose for effortless deployment and management. The server collects metrics using Prometheus, while Grafana is used for visually displaying these metrics.
 
-![App screenshot](./readme_src/example.jpg)
+![example](https://github.com/MaksimPozharskiy/proxy-go/assets/47855527/46ade724-da27-4123-aba0-b0016a1efa49)
+
 
 ### Usage:
 
