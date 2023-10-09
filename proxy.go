@@ -1,13 +1,13 @@
 package main
 
 import (
-  "fmt"
-  "io"
-  "log"
-  "net/http"
-  "os"
-  "time"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
 	"strconv"
+	"time"
 )
 
 var backoffSchedule = []time.Duration{
@@ -17,13 +17,13 @@ var backoffSchedule = []time.Duration{
 }
 
 func createProxyServer() *http.Server {
-  http.HandleFunc("/", handleRequest)
+	http.HandleFunc("/", handleRequest)
 
-  server := &http.Server{
-    Addr: ":8080",
-  }
-  
-  return server
+	server := &http.Server{
+		Addr: ":8080",
+	}
+
+	return server
 }
 
 func handleRequest(writer http.ResponseWriter, req *http.Request) {
@@ -35,7 +35,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	}
 
 	fmt.Println(req.Method, req.URL)
-	
+
 	proxyReq, err := http.NewRequest(req.Method, targetUrl, req.Body)
 	if err != nil {
 		http.Error(writer, "Error creaing proxy request", http.StatusInternalServerError)
@@ -100,7 +100,7 @@ func getRequestWithRetry(req *http.Request) (*http.Response, error) {
 		fmt.Printf("Retrying in %v\n", backoff)
 		time.Sleep(backoff)
 	}
-	
+
 	// if all retries failed
 	return nil, err
 }
