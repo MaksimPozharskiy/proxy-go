@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 )
 
 func main() {
@@ -11,7 +12,7 @@ func main() {
 
 	go serverMetrics.ListenAndServe()
 
-	log.Println("Starting proxy server on :8080 port")
+	log.Printf("Starting proxy server on %s port\n", os.Getenv("PROXY_SERVER_PORT"))
 
 	err := server.ListenAndServe()
 	if err != nil {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -14,9 +15,6 @@ var (
 			Help: "Total number of requests",
 		},
 	)
-)
-
-var (
 	responseTimeHistogram = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
 			Name:    "proxy_go_response_time_seconds",
@@ -24,9 +22,6 @@ var (
 			Buckets: prometheus.LinearBuckets(0.01, 0.1, 10),
 		},
 	)
-)
-
-var (
 	httpStatusCount = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "proxy_go_http_status_count",
@@ -34,9 +29,6 @@ var (
 		},
 		[]string{"code"},
 	)
-)
-
-var (
 	throughputHistogram = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
 			Name:    "proxy_go_throughput_bytes",
@@ -58,7 +50,7 @@ func init() {
 func createMetricsServer() *http.Server {
 	http.Handle("/metrics", promhttp.Handler())
 	server := &http.Server{
-		Addr: ":8090",
+		Addr: ":" + os.Getenv("METRICS_SERVER_PORT"),
 	}
 
 	return server

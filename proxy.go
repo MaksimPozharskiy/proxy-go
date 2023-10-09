@@ -16,11 +16,13 @@ var backoffSchedule = []time.Duration{
 	10 * time.Second,
 }
 
+var proxyTargetUrl = os.Getenv("PROXY_TARGET_URL")
+
 func createProxyServer() *http.Server {
 	http.HandleFunc("/", handleRequest)
 
 	server := &http.Server{
-		Addr: ":8080",
+		Addr: ":" + os.Getenv("PROXY_SERVER_PORT"),
 	}
 
 	return server
@@ -29,7 +31,7 @@ func createProxyServer() *http.Server {
 func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	startReq := time.Now()
 
-	targetUrl := os.Getenv("PROXY_TARGET_URL") + fmt.Sprintf("%s", req.URL)
+	targetUrl := proxyTargetUrl + fmt.Sprintf("%s", req.URL)
 	if targetUrl == "" {
 		log.Fatal("PROXY_TARGET_URL in env not setted")
 	}
