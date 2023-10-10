@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"os"
-	"proxy-go/metrics"
-	"proxy-go/proxy"
+	"github.com/MaksimPozharskiy/proxy-go/metrics"
+	"github.com/MaksimPozharskiy/proxy-go/proxy"
 )
 
 func main() {
