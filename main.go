@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+
 	"github.com/MaksimPozharskiy/proxy-go/metrics"
 	"github.com/MaksimPozharskiy/proxy-go/proxy"
 )

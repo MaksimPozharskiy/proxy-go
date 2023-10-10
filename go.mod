@@ -1,4 +1,4 @@
-module proxy-go
+module github.com/MaksimPozharskiy/proxy-go
 
 go 1.20
 
