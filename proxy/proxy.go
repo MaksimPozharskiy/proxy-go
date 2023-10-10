@@ -1,4 +1,4 @@
-package main
+package proxy
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"proxy-go/metrics"
 )
 
 var backoffSchedule = []time.Duration{
@@ -18,7 +20,7 @@ var backoffSchedule = []time.Duration{
 
 var proxyTargetUrl = os.Getenv("PROXY_TARGET_URL")
 
-func createProxyServer() *http.Server {
+func CreateProxyServer() *http.Server {
 	http.HandleFunc("/", handleRequest)
 
 	server := &http.Server{
@@ -70,10 +72,10 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	throughput := float64(resp.ContentLength) / finishReq
 
 	fmt.Printf("Request performs  %vs.\n", finishReq)
-	responseTimeHistogram.Observe(finishReq)
-	requestsTotal.Inc()
-	httpStatusCount.WithLabelValues(strconv.Itoa(resp.StatusCode)).Inc()
-	throughputHistogram.Observe(throughput)
+	metrics.ResponseTimeHistogram.Observe(finishReq)
+	metrics.RequestsTotal.Inc()
+	metrics.HttpStatusCount.WithLabelValues(strconv.Itoa(resp.StatusCode)).Inc()
+	metrics.ThroughputHistogram.Observe(throughput)
 }
 
 func getRequest(req *http.Request) (*http.Response, error) {

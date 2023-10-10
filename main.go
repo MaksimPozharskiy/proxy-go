@@ -3,12 +3,14 @@ package main
 import (
 	"log"
 	"os"
+	"proxy-go/metrics"
+	"proxy-go/proxy"
 )
 
 func main() {
-	server := createProxyServer()
+	server := proxy.CreateProxyServer()
 
-	serverMetrics := createMetricsServer()
+	serverMetrics := metrics.CreateMetricsServer()
 
 	go serverMetrics.ListenAndServe()
 
