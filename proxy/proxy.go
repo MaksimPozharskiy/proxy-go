@@ -38,7 +38,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 		log.Fatal("PROXY_TARGET_URL in env not setted")
 	}
 
-	fmt.Println(req.Method, req.URL)
+	log.Println(req.Method, req.URL)
 
 	proxyReq, err := http.NewRequest(req.Method, targetUrl, req.Body)
 	if err != nil {
@@ -51,7 +51,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	resp, err := getRequestWithRetry(proxyReq)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(writer, "Error sending proxy request", http.StatusInternalServerError)
 		return
 	}
@@ -71,7 +71,7 @@ func handleRequest(writer http.ResponseWriter, req *http.Request) {
 	finishReq := time.Since(startReq).Seconds()
 	throughput := float64(resp.ContentLength) / finishReq
 
-	fmt.Printf("Request performs  %vs.\n", finishReq)
+	log.Printf("Request performs  %vs.\n", finishReq)
 	metrics.ResponseTimeHistogram.Observe(finishReq)
 	metrics.RequestsTotal.Inc()
 	metrics.HttpStatusCount.WithLabelValues(strconv.Itoa(resp.StatusCode)).Inc()
@@ -100,8 +100,8 @@ func getRequestWithRetry(req *http.Request) (*http.Response, error) {
 			return resp, nil
 		}
 
-		fmt.Printf("Request error: %v\n", err)
-		fmt.Printf("Retrying in %v\n", backoff)
+		log.Printf("Request error: %v\n", err)
+		log.Printf("Retrying in %v\n", backoff)
 		time.Sleep(backoff)
 	}
 
