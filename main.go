@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/MaksimPozharskiy/proxy-go/metrics"
 	"github.com/MaksimPozharskiy/proxy-go/proxy"
@@ -17,8 +21,21 @@ func main() {
 
 	log.Printf("Starting proxy server on %s port\n", os.Getenv("PROXY_SERVER_PORT"))
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatal("Error starting proxy server: ", err)
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			log.Fatal("Error starting proxy server: ", err)
+		}
+	}()
+
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
+	<-exit
+	log.Println("Graceful shutdowning server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal("Shutdown error: ", err)
 	}
+
 }
