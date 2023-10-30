@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  proxy-go:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    image: proxy-go
+    ports:
+      - "8080:8080"
+    depends_on:
+      - prometheus
+    env_file:
+      - ../.env
+    networks:
+      - backend
+  grafana:
+    image: grafana/grafana:8.5.3-ubuntu
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-configs:/etc/grafana
+      - ../grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    networks:
+      - backend
+  prometheus:
+    image: prom/prometheus:v2.36.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - prom-data:/prometheus
+      - prom-configs:/etc/prometheus
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:  
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - backend
+  node-exporter:
+    image: prom/node-exporter:v1.2.2
+    ports:
+      - "9100:9100"
+    networks:
+      - backend
+volumes:
+  grafana-data:
+  grafana-configs:
+  prom-data:
+  prom-configs:
+
+networks:
+  backend:
