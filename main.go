@@ -17,6 +17,9 @@ func main() {
 
 	serverMetrics := metrics.CreateMetricsServer()
 
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, os.		Interrupt, syscall.SIGTERM)
+
 	go serverMetrics.ListenAndServe()
 
 	log.Printf("Starting proxy server on %s port\n", os.Getenv("PROXY_SERVER_PORT"))
@@ -27,9 +30,7 @@ func main() {
 		}
 	}()
 
-	exit := make(chan os.Signal, 1)
-	signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
-	<-exit
+	<-exit	
 	log.Println("Graceful shutdowning server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
