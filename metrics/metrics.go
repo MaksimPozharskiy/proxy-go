@@ -1,9 +1,11 @@
 package metrics
 
 import (
-	"net/http"
+	"context"
+	"fmt"
 	"os"
 
+	"github.com/MaksimPozharskiy/proxy-go/server"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -38,6 +40,8 @@ var (
 	)
 )
 
+var metricsServerPort = os.Getenv("METRICS_SERVER_PORT")
+
 func init() {
 	prometheus.MustRegister(
 		RequestsTotal,
@@ -47,11 +51,10 @@ func init() {
 	)
 }
 
-func CreateMetricsServer() *http.Server {
-	http.Handle("/metrics", promhttp.Handler())
-	server := &http.Server{
-		Addr: ":" + os.Getenv("METRICS_SERVER_PORT"),
-	}
+func RunMetricsServer(ctx context.Context) {
+	srv := server.New(promhttp.Handler(), metricsServerPort)
 
-	return server
+	if err := srv.Run(ctx); err != nil {
+		err = fmt.Errorf("run metrics server: %w", err)
+	}
 }

@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/MaksimPozharskiy/proxy-go/metrics"
+	"github.com/MaksimPozharskiy/proxy-go/server"
 )
 
 var backoffSchedule = []time.Duration{
@@ -19,15 +21,16 @@ var backoffSchedule = []time.Duration{
 }
 
 var proxyTargetUrl = os.Getenv("PROXY_TARGET_URL")
+var proxyServerPort = os.Getenv("PROXY_SERVER_PORT")
 
-func CreateProxyServer() *http.Server {
+func RunProxyServer(ctx context.Context) {
 	http.HandleFunc("/", handleRequest)
 
-	server := &http.Server{
-		Addr: ":" + os.Getenv("PROXY_SERVER_PORT"),
-	}
+	srv := server.New(http.HandlerFunc(handleRequest), proxyServerPort)
 
-	return server
+	if err := srv.Run(ctx); err != nil {
+		err = fmt.Errorf("run proxy server: %w", err)
+	}
 }
 
 func handleRequest(writer http.ResponseWriter, req *http.Request) {
